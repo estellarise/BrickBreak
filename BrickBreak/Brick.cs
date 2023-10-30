@@ -11,13 +11,13 @@ namespace BrickBreak
 {
     internal class Brick:GameObject
     {
-        bool exists;
+        bool exists = true;
         float xVelocity = 0; // for paddle
         float speed = 0; // for paddle
 
-        public Brick(Texture2D texture, Vector2 position, bool exists) : base(texture, position)
+        public Brick(Texture2D texture, Vector2 position) : base(texture, position)
         {
-            this.exists = exists;
+            
         }
 
     }
