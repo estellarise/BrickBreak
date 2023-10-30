@@ -14,50 +14,15 @@ namespace BrickBreak
     {
         int length;
         int width;
-        Brick[] bricks;
-
-        T[] InitializeArray<T>(int length) where T : new()
-        {
-            T[] array = new T[length];
-            for (int i = 0; i < length; ++i)
-            {
-                array[i] = new T();
-            }
-
-            return array;
-        }
+        Brick[,] bricks;
 
         public Level(int length, int width)
         {
             this.length = length;
             this.width = width;
-            //bricks = InitializeArray<GameObject>(200);
-            bricks = new Brick[length];
+            bricks = new Brick[length,width];
         }
-
-        /*
-        public Brick[,] InitializeArray(int length,int width, Texture2D brickTexture)
-        {
-            Brick[,] array = new Brick[length,width];
-            for (int i = 0; i < length; ++i)
-            {
-                for (int j = 0; j< width; ++j)
-                {
-                    array[i,j] = new Brick(brickTexture, new Vector2(0,0));
-                }
-            }
-
-            return array;
-        }
-        
-
-        public Level(int length, int width, Texture2D brickTexture)
-        {
-            //bricks = new Brick[200].Select(h => new Brick()).ToArray();
-            //this.bricks = new Brick[length, width];
-            this.bricks = InitializeArray(length, width, brickTexture);
-        }
-        */
+              
         public int getLength()
         {
             return length; 
@@ -69,14 +34,12 @@ namespace BrickBreak
         }
         public void setBrick(int i, int j, Brick brick)
         {
-            //bricks[i,j] = brick;
-            bricks[i] = brick;  
+            bricks[i,j] = brick;
         }
 
         public Brick getBrick(int i, int j)
         {
-            //return bricks[i, j] ;
-            return bricks[i];
+            return bricks[i, j] ;
         }
     }
 }

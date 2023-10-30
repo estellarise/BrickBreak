@@ -27,40 +27,23 @@ namespace BrickBreak
             paddle = new Brick(Content.Load<Texture2D>("paddleBlu"),
                                new Vector2(_graphics.PreferredBackBufferHeight, 0)
                                 );
-            //board = new Level(5, 5, Content.Load<Texture2D>("element_blue_rectangle"));
             board = new Level(5,5);
+
+            //Populate level with bricks
             for (int i = 0; i < board.getLength(); ++i)
             {
-                board.setBrick(
-                        i,
-                        //j, 
-                        0,
-                        new Brick(
-                            Content.Load<Texture2D>("element_blue_rectangle"),
-                            new Vector2(10+i*64,0*32) 
-                            //new Vector2(0, 0)
-                        )
-                );
-            }
-            /*
-            for (int i = 0; i < board.getLength(); ++i)
-            {
-                //for (int j = 0; j < board.getWidth(); ++j)
-                //{
+                for (int j = 0; j < board.getWidth(); ++j)
+                {
                     board.setBrick(
-                        i,
-                        //j, 
-                        0,
-                        new Brick(
-                            Content.Load<Texture2D>("element_blue_rectangle"),
-                            //new Vector2(10+i*64,j*32), 
-                            new Vector2(0,0)
-                        ) 
+                            i,
+                            j,
+                            new Brick(
+                                Content.Load<Texture2D>("element_blue_rectangle"),
+                                new Vector2(10 + i * 64, j * 32)
+                            )
                     );
-                //}
-            }
-            */
-            
+                }
+            }           
 
             base.Initialize();
         }
@@ -77,8 +60,6 @@ namespace BrickBreak
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            //Console.WriteLine("Hello World");
-            // Console.WriteLine(board.getBrick(1,2).Position.ToString());
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -86,7 +67,7 @@ namespace BrickBreak
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.LightGoldenrodYellow);
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
