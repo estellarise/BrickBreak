@@ -15,5 +15,21 @@ namespace BrickBreak
         public Ball(Texture2D texture, Vector2 position) : base(texture, position)
         {
         }
+
+        public Vector2 getVelocity()
+        {
+            return Velocity;
+        }
+        public void setVelocity(Vector2 velocity)
+        {
+            Velocity=velocity;
+        }
+        public float getSpeed() { 
+            return speed;
+        }
+        public void setSpeed(float speed)
+        {
+            this.speed = speed;
+        }
     }
 }

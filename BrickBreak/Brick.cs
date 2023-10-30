@@ -19,6 +19,24 @@ namespace BrickBreak
         {
             
         }
+        public bool Exists()
+        {
+            return exists;
+        }
+
+        public float getSpeed()
+        {
+            return speed;
+        }
+
+        public void setSpeed(float brickSpeed)
+        {
+            speed = brickSpeed;
+        }
+        public float getXVelocity()
+        {
+            return xVelocity;
+        }
 
     }
 }
