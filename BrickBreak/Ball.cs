@@ -10,12 +10,13 @@ namespace BrickBreak
 {
     internal class Ball : GameObject
     {
-        Vector2 Velocity = new Vector2(0,0); // <X,Y> direction vector
-        float speed = 0;
-        public Ball(Texture2D texture, Vector2 position) : base(texture, position)
+        //Vector2 Velocity = new Vector2(0,0); // <X,Y> direction vector
+        //float speed = 0;
+        public Ball(Texture2D texture, int xPosition, int yPosition, int width, int height): base(texture, xPosition, yPosition, width, height)
         {
         }
 
+        /*
         public Vector2 getVelocity()
         {
             return Velocity;
@@ -31,5 +32,6 @@ namespace BrickBreak
         {
             this.speed = speed;
         }
+        */
     }
 }

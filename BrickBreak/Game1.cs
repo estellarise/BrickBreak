@@ -13,6 +13,9 @@ namespace BrickBreak
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         Random rnd;
+        //Texture2D paddleTexture;
+        //Texture2D ballTexture;
+        //Texture2D brickTexture;
 
         public Game1()
         {
@@ -25,14 +28,26 @@ namespace BrickBreak
         {
             // TODO: Add your initialization logic here
 
+            // Load Textures
+            Texture2D paddleTexture = Content.Load<Texture2D>("paddleBlu");
+            Texture2D ballTexture = Content.Load<Texture2D>("ballBlue");
+            Texture2D brickTexture = Content.Load<Texture2D>("element_blue_rectangle");
+
             rnd = new Random();
-            paddle = new Brick(Content.Load<Texture2D>("paddleBlu"), Vector2.Zero);                               
-            ball = new Ball(Content.Load<Texture2D>("ballBlue"), Vector2.Zero);
-            ball.Position = new Vector2(_graphics.PreferredBackBufferWidth / 2,
-                               _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height);
+            paddle = new Brick
+                (paddleTexture, _graphics.PreferredBackBufferWidth / 2, 
+                    _graphics.PreferredBackBufferHeight - paddleTexture.Height,
+                    paddleTexture.Width,
+                    paddleTexture.Height
+                );
+
+            ball = new Ball
+                (ballTexture, _graphics.PreferredBackBufferWidth / 2, 
+                    _graphics.PreferredBackBufferHeight - paddleTexture.Height - ballTexture.Height,
+                    ballTexture.Width,
+                    ballTexture.Height 
+                );
             ball.setSpeed(400f);
-            paddle.Position = new Vector2(_graphics.PreferredBackBufferWidth / 2,
-                                          _graphics.PreferredBackBufferHeight - paddle.Texture.Height);
             paddle.setSpeed(1000f);
             board = new Level(5,5);
 
@@ -44,9 +59,13 @@ namespace BrickBreak
                     board.setBrick(
                             i,
                             j,
-                            new Brick(
-                                Content.Load<Texture2D>("element_blue_rectangle"),
-                                new Vector2(10 + i * 64, j * 32)
+                            new Brick
+                            (
+                                brickTexture,
+                                10 + i * 64,
+                                j * 32,
+                                brickTexture.Width,
+                                brickTexture.Height
                             )
                     );
                 }
@@ -67,32 +86,45 @@ namespace BrickBreak
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            // TODO: Add your update logic here
-            
             var kstate = Keyboard.GetState();
 
-            if (ball.getVelocity() == Vector2.Zero) // if ball is stopped
+            // Start stopped ball
+            if (ball.getDirection() == Vector2.Zero) // if ball is stopped
             {
                 if(kstate.IsKeyDown(Keys.Space)) // press space to start it
                 {
                     // choose one of two random directions: 45, 135 degrees 
                     int xRnd = rnd.Next(0, 2); // 0 or 1
-                    ball.setVelocity(new Vector2(-1+xRnd * 2, -1)); // <-1 or 1, -1>, ball always starts up
+                    ball.setDirection(new Vector2(-1 + xRnd * 2, -1)); // <-1 or 1, -1>, ball always starts up
                 }
             }
+
+            // Move paddle
             // Right paddle controller: Left, Right
             if (kstate.IsKeyDown(Keys.Left))
             {
-                paddle.Position.X -= paddle.getSpeed()*(float)gameTime.ElapsedGameTime.TotalSeconds;//XVelocity is linear, not vector2
+                paddle.setX(
+                    (int)(paddle.getX() - paddle.getSpeed() * (float) gameTime.ElapsedGameTime.TotalSeconds)
+                );
             }
-
+            
             if (kstate.IsKeyDown(Keys.Right))
             {
-                paddle.Position.X += paddle.getSpeed() * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                paddle.setX(
+                    (int) (paddle.getX() + paddle.getSpeed() * (float) gameTime.ElapsedGameTime.TotalSeconds)
+                );
             }
+            
+            // Update ball position
+            ball.setX(
+                    (int) (ball.getX() + ball.getSpeed() * ball.getDirection().X * (float) gameTime.ElapsedGameTime.TotalSeconds)
+            );
+            ball.setY(
+                    (int) (ball.getY() + ball.getSpeed() * ball.getDirection().Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
+                );
 
-            ball.Position += ball.getSpeed()*(float)gameTime.ElapsedGameTime.TotalSeconds * ball.getVelocity();
-
+            // Collision Detection
+            
             base.Update(gameTime);
         }
 
@@ -102,8 +134,8 @@ namespace BrickBreak
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(ball.Texture, ball.Position, Color.White);
-            _spriteBatch.Draw(paddle.Texture, paddle.Position, Color.White);
+            _spriteBatch.Draw(ball.Texture, ball.Bounds, Color.White);
+            _spriteBatch.Draw(paddle.Texture, paddle.Bounds, Color.White);
 
             for (int i = 0; i < board.getLength(); ++i)
             {
@@ -112,7 +144,7 @@ namespace BrickBreak
                     Brick currBrick = board.getBrick(i, j);
                     if (currBrick.Exists())
                     {
-                        _spriteBatch.Draw(currBrick.Texture, currBrick.Position, Color.White);
+                        _spriteBatch.Draw(currBrick.Texture, currBrick.Bounds, Color.White);
                     }
                 }
             }

@@ -11,13 +11,49 @@ namespace BrickBreak
     internal class GameObject
     {
         public Texture2D Texture;
-        public Vector2 Position;
+        public Rectangle Bounds;
+        public float Speed = 0;
+        public Vector2 Direction = new Vector2(0, 0);
 
-        public GameObject(Texture2D texture, Vector2 position)
+        public GameObject(Texture2D texture, int xPosition, int yPosition, int width, int height)
         {
             this.Texture = texture;
-            this.Position = position;
+            this.Bounds = new Rectangle(xPosition, yPosition, width, height);
         }
+
+        public int getX() { return Bounds.X;}
+        public int getY() { return Bounds.Y; } 
+        public int getWidth() { return Bounds.Width; }
+        public int getHeight() { return Bounds.Height; } 
+        public void setX(int x) { Bounds.X = x;} 
+        public void setY(int y) {  Bounds.Y = y; }
+        public void setWidth(int width) { Bounds.Width = width; }
+        public void setHeight(int height) { Bounds.Height = height; }
+        public Texture2D getTexture() { return Texture;}
+        public void setTexture(Texture2D tex) { Texture = tex;} 
+
+        public Rectangle getBounds() { return Bounds; } 
+        public void setBounds(Rectangle bounds) { Bounds = bounds; }
+        public Vector2 getDirection()
+        {
+            return Direction;
+        }
+
+        public float getSpeed()
+        {
+            return Speed;
+        }
+
+        public void setSpeed(float speed)
+        {
+            Speed = speed;
+        }
+
+        public void setDirection(Vector2 direction)
+        {
+            Direction = direction;
+        }
+ 
     }
 
     

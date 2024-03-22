@@ -12,18 +12,18 @@ namespace BrickBreak
     internal class Brick:GameObject
     {
         bool exists = true;
-        float xVelocity = 0; // for paddle
-        float speed = 0; // for paddle
+        //float xVelocity = 0; // for paddle
+        //float speed = 0; // for paddle
 
-        public Brick(Texture2D texture, Vector2 position) : base(texture, position)
+        public Brick(Texture2D texture, int xPosition, int yPosition, int width, int height): base(texture, xPosition, yPosition, width, height)
         {
-            
         }
         public bool Exists()
         {
             return exists;
         }
 
+        /*
         public float getSpeed()
         {
             return speed;
@@ -37,6 +37,7 @@ namespace BrickBreak
         {
             return xVelocity;
         }
+        */
 
     }
 }
