@@ -24,27 +24,19 @@ namespace BrickBreak
             this.Speed = speed;
         }
 
-        /*
-        public int getX() { return Bounds.X;}
-        public int getY() { return Bounds.Y; } 
-        public int getWidth() { return Bounds.Width; }
-        public int getHeight() { return Bounds.Height; } 
-        public void setX(int x) { Bounds.X = x;} 
-        public void setY(int y) {  Bounds.Y = y; }
-        public void setWidth(int width) { Bounds.Width = width; }
-        public void setHeight(int height) { Bounds.Height = height; }
-        public Texture2D getTexture() { return Texture;}
-        public void setTexture(Texture2D tex) { Texture = tex;} 
-
         public Rectangle getBounds() { return Bounds; } 
         public void setBounds(Rectangle bounds) { Bounds= bounds; }
-        */
-
+        public Texture2D getTexture() { return Texture;}
+        public void setTexture(Texture2D tex) { Texture = tex;} 
         public Vector2 getDirection()
         {
             return Direction;
         }
 
+        public void setDirection(Vector2 direction)
+        {
+            Direction = direction;
+        }
         public float getSpeed()
         {
             return Speed;
@@ -55,10 +47,6 @@ namespace BrickBreak
             Speed = speed;
         }
 
-        public void setDirection(Vector2 direction)
-        {
-            Direction = direction;
-        }
  
     }
 

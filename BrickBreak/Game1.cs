@@ -2,16 +2,18 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
 
 namespace BrickBreak
 {
     public class Game1 : Game
     {
         private Ball ball;
-        private Brick paddle;
+        private Paddle paddle;
         private Level board;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Rectangle wall;
         Random rnd;
         //Texture2D paddleTexture;
         //Texture2D ballTexture;
@@ -31,9 +33,11 @@ namespace BrickBreak
             Texture2D paddleTexture = Content.Load<Texture2D>("paddleBlu");
             Texture2D ballTexture = Content.Load<Texture2D>("ballBlue");
             Texture2D brickTexture = Content.Load<Texture2D>("element_blue_rectangle");
+            wall = new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            LoadContent();
 
             rnd = new Random();
-            paddle = new Brick(
+            paddle = new Paddle(
                         paddleTexture,
                         new Rectangle(_graphics.PreferredBackBufferWidth / 2,
                             _graphics.PreferredBackBufferHeight - paddleTexture.Height, 
@@ -116,15 +120,34 @@ namespace BrickBreak
             {
                 paddle.Bounds.X += (int)(paddle.getSpeed() * (float)gameTime.ElapsedGameTime.TotalSeconds);
             }
+            
+            // Collision Detection
+            if (ball.Bounds.X < wall.Left)
+            {
+                ball.Direction.X = 1; 
+            }
+            if (ball.Bounds.X > wall.Right)
+            {
+                ball.Direction.X = -1;
+            }
+            if (ball.Bounds.Y < wall.Top) // remember top of screen is 0, bottom of screen is +, so Y must increase to bounce down
+            {
+                ball.Direction.Y = 1;
+            }
+            if (ball.Bounds.Y > wall.Bottom)
+            {
+                ball.Direction = new Vector2(0, 0);
+                ball.Bounds.X = _graphics.PreferredBackBufferWidth / 2; 
+                ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
+                // add "lose a life"
+            }
+
 
             // Update ball position
-            ///*
             ball.Bounds.Offset(
                     (int)(ball.getSpeed()* ball.Direction.X * (float) gameTime.ElapsedGameTime.TotalSeconds),
                     (int)(ball.getSpeed()* ball.Direction.Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
                 );
-            //*/
-            // Collision Detection
             
             base.Update(gameTime);
         }
