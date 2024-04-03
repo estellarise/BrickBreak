@@ -27,25 +27,29 @@ namespace BrickBreak
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-
             // Load Textures
             Texture2D paddleTexture = Content.Load<Texture2D>("paddleBlu");
             Texture2D ballTexture = Content.Load<Texture2D>("ballBlue");
             Texture2D brickTexture = Content.Load<Texture2D>("element_blue_rectangle");
 
             rnd = new Random();
-            paddle = new Brick
-                (paddleTexture, _graphics.PreferredBackBufferWidth / 2, 
-                    _graphics.PreferredBackBufferHeight - paddleTexture.Height,
-                    paddleTexture.Width,
-                    paddleTexture.Height
-                );
+            paddle = new Brick(
+                        paddleTexture,
+                        new Rectangle(_graphics.PreferredBackBufferWidth / 2,
+                            _graphics.PreferredBackBufferHeight - paddleTexture.Height, 
+                            paddleTexture.Width, 
+                            paddleTexture.Height
+                        )
+                     );
 
-            ball = new Ball
-                (ballTexture, _graphics.PreferredBackBufferWidth / 2, 
-                    _graphics.PreferredBackBufferHeight - paddleTexture.Height - ballTexture.Height,
-                    ballTexture.Width,
-                    ballTexture.Height 
+            ball = new Ball(
+                    ballTexture, 
+                    new Rectangle(
+                        _graphics.PreferredBackBufferWidth / 2, 
+                        _graphics.PreferredBackBufferHeight - paddleTexture.Height - ballTexture.Height,
+                        ballTexture.Width,
+                        ballTexture.Height 
+                    )
                 );
             ball.setSpeed(400f);
             paddle.setSpeed(1000f);
@@ -62,10 +66,12 @@ namespace BrickBreak
                             new Brick
                             (
                                 brickTexture,
-                                10 + i * 64,
-                                j * 32,
-                                brickTexture.Width,
-                                brickTexture.Height
+                                new Rectangle(
+                                    10 + i * 64,
+                                    j * 32,
+                                    brickTexture.Width,
+                                    brickTexture.Height
+                                )
                             )
                     );
                 }
@@ -103,26 +109,21 @@ namespace BrickBreak
             // Right paddle controller: Left, Right
             if (kstate.IsKeyDown(Keys.Left))
             {
-                paddle.setX(
-                    (int)(paddle.getX() - paddle.getSpeed() * (float) gameTime.ElapsedGameTime.TotalSeconds)
-                );
+                paddle.Bounds.X -= (int)(paddle.getSpeed() * (float)gameTime.ElapsedGameTime.TotalSeconds);
             }
             
             if (kstate.IsKeyDown(Keys.Right))
             {
-                paddle.setX(
-                    (int) (paddle.getX() + paddle.getSpeed() * (float) gameTime.ElapsedGameTime.TotalSeconds)
-                );
+                paddle.Bounds.X += (int)(paddle.getSpeed() * (float)gameTime.ElapsedGameTime.TotalSeconds);
             }
-            
-            // Update ball position
-            ball.setX(
-                    (int) (ball.getX() + ball.getSpeed() * ball.getDirection().X * (float) gameTime.ElapsedGameTime.TotalSeconds)
-            );
-            ball.setY(
-                    (int) (ball.getY() + ball.getSpeed() * ball.getDirection().Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
-                );
 
+            // Update ball position
+            ///*
+            ball.Bounds.Offset(
+                    (int)(ball.getSpeed()* ball.Direction.X * (float) gameTime.ElapsedGameTime.TotalSeconds),
+                    (int)(ball.getSpeed()* ball.Direction.Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
+                );
+            //*/
             // Collision Detection
             
             base.Update(gameTime);
