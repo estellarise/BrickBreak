@@ -17,53 +17,60 @@ namespace BrickBreak
         public float Speed;
         public Vector2 Direction = new Vector2(0, 0);
 
-        //public GameObject(Texture2D texture, int xPosition, int yPosition, int width, int height)
         public GameObject(Texture2D texture, Rectangle rectangle, float speed = 0)
         {
             this.Texture = texture;
-            //this.Bounds = new Rectangle(xPosition, yPosition, width, height);
             this.Bounds = rectangle;
             this.Speed = speed;
         }
 
         // can make bool instead to vary collision effect
         // in fact, prob should
-        public virtual void collidesWith(GameObject other)
+        public virtual bool collidesWith(GameObject other)
         {
             // check vertical collision
             // this obj center b/w left and right of the other one
-            if (this.Bounds.Center.X <= other.Bounds.Right && this.Bounds.Center.X >= other.Bounds.Left)
+            if (this.Bounds.Center.X < other.Bounds.Right && this.Bounds.Center.X > other.Bounds.Left)
             { 
                 // this obj collides other from bottom
-                if (this.Bounds.Top <= other.Bounds.Bottom && this.Bounds.Bottom >= other.Bounds.Bottom)
+                // other bottom b/w this top and bottom
+                if (this.Bounds.Top < other.Bounds.Bottom && this.Bounds.Bottom > other.Bounds.Bottom)
                 {
                     //this.Bounds.Y = other.Bounds.Bottom;
                     this.Direction.Y = 1;
                     Debug.WriteLine("Bounce Down");
+                    return true;
                 }
                 // this obj collides other from top
-                else if (this.Bounds.Bottom >= other.Bounds.Top && this.Bounds.Top <= other.Bounds.Bottom)
+                //other top b/w this top and bottom
+                if (this.Bounds.Top < other.Bounds.Top && this.Bounds.Bottom > other.Bounds.Top)
                 {
                     //this.Bounds.Y = other.Bounds.Top - this.Bounds.Height;
                     this.Direction.Y = -1;
                     Debug.WriteLine("Bounce Up");
+                    return true;
                 }
             } 
             // check hz collision
             // this obj center b/w top and bottom of other one
-            if (this.Bounds.Center.Y <= other.Bounds.Bottom && this.Bounds.Center.Y >= other.Bounds.Top)
+            if (this.Bounds.Center.Y < other.Bounds.Bottom && this.Bounds.Center.Y > other.Bounds.Top)
             {
-                if (this.Bounds.Left  <= other.Bounds.Right)
+                if (this.Bounds.Left  < other.Bounds.Right && this.Bounds.Right > other.Bounds.Right)
                 {
                     //this.Bounds.X = other.Bounds.Right;
                     this.Direction.X = 1;
+                    Debug.WriteLine("Bounce Right");
+                    return true;
                 }
-                else if (this.Bounds.Right >= other.Bounds.Left)
+                else if (this.Bounds.Right > other.Bounds.Left && this.Bounds.Left < other.Bounds.Left)
                 {
                     //this.Bounds.X = other.Bounds.Left - this.Bounds.Width;
                     this.Direction.X = -1;
+                    Debug.WriteLine("Bounce Left");
+                    return true;
                 }
             }
+            return false;
         }
 
         public Rectangle getBounds() { return Bounds; } 

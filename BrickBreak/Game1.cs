@@ -56,8 +56,8 @@ namespace BrickBreak
                     )
                 );
             ball.setSpeed(400f);
-            paddle.setSpeed(1000f);
-            board = new Level(1,1);
+            paddle.setSpeed(1200f);
+            board = new Level(7,5);
 
             //Populate level with bricks
             for (int i = 0; i < board.getLength(); ++i)
@@ -146,20 +146,20 @@ namespace BrickBreak
 
             ball.collidesWith(paddle);
 
-            /*
             for (int i = 0; i < board.getLength(); ++i)
             {
                 for (int j = 0; j < board.getWidth(); ++j)
                 {
                     Brick currBrick = board.getBrick(i, j);
-                    //if (currBrick.Exists)
-                    //{
-                        //check
-                        ball.collidesWith(currBrick);
-                    //}
+                    if (currBrick.Exists)
+                    {
+                        if (ball.collidesWith(currBrick))
+                        {
+                            currBrick.Exists = false;
+                        }
+                    }
                 }
             }
-            */
 
             // Update ball position
             ball.Bounds.Offset(
@@ -194,11 +194,5 @@ namespace BrickBreak
 
             base.Draw(gameTime);
         }
-
-        protected void CollisionDetection<T>(T obj1, T obj2)
-        {
-
-        }
-
     }
 }

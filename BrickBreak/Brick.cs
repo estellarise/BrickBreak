@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace BrickBreak
 {
@@ -21,11 +22,15 @@ namespace BrickBreak
         //overriding for one instance is okay
         //derive ErasableGameObject from GameObject if multiple erasable objects are needed
         //then override in ErasableGameObject 
-        public override void collidesWith(GameObject other) { 
+
+        /*
+        public override bool collidesWith(GameObject other) { 
             base.collidesWith(other);
             this.Exists = false;
+            Debug.WriteLine("Deleted?");
             // [add points]
         }
+        */
 
     }
 }
