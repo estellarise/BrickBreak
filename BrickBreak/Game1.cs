@@ -57,7 +57,7 @@ namespace BrickBreak
                 );
             ball.setSpeed(400f);
             paddle.setSpeed(1000f);
-            board = new Level(5,5);
+            board = new Level(1,1);
 
             //Populate level with bricks
             for (int i = 0; i < board.getLength(); ++i)
@@ -136,12 +136,30 @@ namespace BrickBreak
             }
             if (ball.Bounds.Y > wall.Bottom)
             {
+                // reset ball to starting pt
                 ball.Direction = new Vector2(0, 0);
                 ball.Bounds.X = _graphics.PreferredBackBufferWidth / 2; 
                 ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
-                // add "lose a life"
+
+                // {add "lose a life"}
             }
 
+            ball.collidesWith(paddle);
+
+            /*
+            for (int i = 0; i < board.getLength(); ++i)
+            {
+                for (int j = 0; j < board.getWidth(); ++j)
+                {
+                    Brick currBrick = board.getBrick(i, j);
+                    //if (currBrick.Exists)
+                    //{
+                        //check
+                        ball.collidesWith(currBrick);
+                    //}
+                }
+            }
+            */
 
             // Update ball position
             ball.Bounds.Offset(
@@ -166,7 +184,7 @@ namespace BrickBreak
                 for (int j = 0; j < board.getWidth(); ++j)
                 {
                     Brick currBrick = board.getBrick(i, j);
-                    if (currBrick.Exists())
+                    if (currBrick.Exists)
                     {
                         _spriteBatch.Draw(currBrick.Texture, currBrick.Bounds, Color.White);
                     }
@@ -176,5 +194,11 @@ namespace BrickBreak
 
             base.Draw(gameTime);
         }
+
+        protected void CollisionDetection<T>(T obj1, T obj2)
+        {
+
+        }
+
     }
 }

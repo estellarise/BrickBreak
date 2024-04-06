@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+    /*
+namespace BrickBreak
+{
+    //not used
+    internal interface ICollidable
+    {
+        public bool CollidesWith(GameObject other); // need to make GameObject abstract for Dependency Inversion Principle
+    }
+}
+    */

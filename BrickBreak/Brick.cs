@@ -11,15 +11,20 @@ namespace BrickBreak
 {
     internal class Brick:GameObject
     {
-        bool exists = true;
+        public bool Exists = true;
 
         public Brick(Texture2D texture, Rectangle rect, float speed = 0): base(texture, rect, speed)
         {
 
         }
-        public bool Exists()
-        {
-            return exists;
+
+        //overriding for one instance is okay
+        //derive ErasableGameObject from GameObject if multiple erasable objects are needed
+        //then override in ErasableGameObject 
+        public override void collidesWith(GameObject other) { 
+            base.collidesWith(other);
+            this.Exists = false;
+            // [add points]
         }
 
     }
