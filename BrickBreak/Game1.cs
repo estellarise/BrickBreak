@@ -80,7 +80,7 @@ namespace BrickBreak
 
             ball.setSpeed(400f);
             paddle.setSpeed(1200f);
-            board = new Level(2,1);
+            board = new Level(8,6);
 
             //Populate level with bricks
             for (int i = 0; i < board.getLength(); ++i)
@@ -121,6 +121,10 @@ namespace BrickBreak
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             var kstate = Keyboard.GetState();
+            if (lives <= 0) { 
+                gameState = "lost"; 
+            }
+            else if (bricksLeft == 0) { gameState = "won"; }
 
             // Start stopped ball
             if (ball.getDirection() == Vector2.Zero) // if ball is stopped
@@ -128,8 +132,15 @@ namespace BrickBreak
                 if(kstate.IsKeyDown(Keys.Space)) // press space to start it
                 {
                     // choose one of two random directions: 45, 135 degrees 
-                    int xRnd = rnd.Next(0, 2); // 0 or 1
-                    ball.setDirection(new Vector2(-1 + xRnd * 2, -1)); // <-1 or 1, -1>, ball always starts up
+                    if (gameState == "ongoing")
+                    {
+                        int xRnd = rnd.Next(0, 2); // 0 or 1
+                        ball.setDirection(new Vector2(-1 + xRnd * 2, -1)); // <-1 or 1, -1>, ball always starts up
+                    }
+                    else
+                    {
+                        Initialize();
+                    }
                 }
             }
 
@@ -196,8 +207,6 @@ namespace BrickBreak
                 );
             
             // check game state
-            if (lives <= 0 && gameState != "won") { gameState = "lost"; }
-            else if (bricksLeft == 0) { gameState = "won"; }
             base.Update(gameTime);
         }
 
@@ -208,13 +217,18 @@ namespace BrickBreak
 
             // Draw Information
             // Places text in center of the screen
+            _spriteBatch.DrawString(font, "Score:" + score.ToString(), new Vector2(600, 0), Color.White,
+                0, new Vector2 (0,0), 2.0f, SpriteEffects.None,0.5f);
+            _spriteBatch.DrawString(font,"Lives:" + lives.ToString(), new Vector2(600, 30), Color.White,
+                0, new Vector2 (0,0), 2.0f, SpriteEffects.None,0.5f);
+
             if (gameState == "won")
             {
                 _spriteBatch.DrawString(font, winText.text, windowCenter, Color.White, 0, winText.position, 5.0f, SpriteEffects.None, 0.5f);
             }
             else if (gameState == "lost")
             {
-                _spriteBatch.DrawString(font, loseText.text, windowCenter, Color.White, 0, loseText.position, 3.0f, SpriteEffects.None, 0.5f);
+                _spriteBatch.DrawString(font, loseText.text, windowCenter, Color.White, 0, loseText.position, 2.5f, SpriteEffects.None, 0.5f);
                 //_spriteBatch.DrawString(font, resetText.text, windowCenter, Color.White, 0, resetText.position, 5.0f, SpriteEffects.None, 0.5f);
             }
 
