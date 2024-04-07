@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks.Sources;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace BrickBreak
 {
@@ -11,10 +13,20 @@ namespace BrickBreak
         private Ball ball;
         private Paddle paddle;
         private Level board;
+        private int score;
+        private int lives;
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Rectangle wall;
+        private String gameState;
+        private int bricksLeft;
         Random rnd;
+        SpriteFont font;
+        Text winText;
+        Text loseText;
+        Text resetText;
+        
+        Vector2 windowCenter;
         //Texture2D paddleTexture;
         //Texture2D ballTexture;
         //Texture2D brickTexture;
@@ -30,13 +42,23 @@ namespace BrickBreak
         {
             // TODO: Add your initialization logic here
             // Load Textures
-            Texture2D paddleTexture = Content.Load<Texture2D>("paddleBlu");
+            Texture2D paddleTexture = Content.Load<Texture2D>("paddleBlue");
             Texture2D ballTexture = Content.Load<Texture2D>("ballBlue");
             Texture2D brickTexture = Content.Load<Texture2D>("element_blue_rectangle");
-            wall = new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
             LoadContent();
 
+            font = Content.Load<SpriteFont>("BoxedFont");
+            winText = new Text("You Win! :)", font);
+            loseText = new Text("You lose... \n Press space to play again.", font);
+            //resetText = new Text("Press space to play again.", font,);
+
+            gameState = "ongoing";
+            windowCenter= new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
             rnd = new Random();
+
+            wall = new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            score = 0;
+            lives = 3;
             paddle = new Paddle(
                         paddleTexture,
                         new Rectangle(_graphics.PreferredBackBufferWidth / 2,
@@ -55,9 +77,10 @@ namespace BrickBreak
                         ballTexture.Height 
                     )
                 );
+
             ball.setSpeed(400f);
             paddle.setSpeed(1200f);
-            board = new Level(7,5);
+            board = new Level(2,1);
 
             //Populate level with bricks
             for (int i = 0; i < board.getLength(); ++i)
@@ -78,6 +101,7 @@ namespace BrickBreak
                                 )
                             )
                     );
+                    bricksLeft++;
                 }
             }           
 
@@ -141,11 +165,13 @@ namespace BrickBreak
                 ball.Bounds.X = _graphics.PreferredBackBufferWidth / 2; 
                 ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
 
-                // {add "lose a life"}
+                // lose a life
+                lives -= 1;
             }
 
             ball.collidesWith(paddle);
 
+            // Check collision with bricks
             for (int i = 0; i < board.getLength(); ++i)
             {
                 for (int j = 0; j < board.getWidth(); ++j)
@@ -156,6 +182,8 @@ namespace BrickBreak
                         if (ball.collidesWith(currBrick))
                         {
                             currBrick.Exists = false;
+                            score += 10;
+                            bricksLeft--;
                         }
                     }
                 }
@@ -167,15 +195,29 @@ namespace BrickBreak
                     (int)(ball.getSpeed()* ball.Direction.Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
                 );
             
+            // check game state
+            if (lives <= 0 && gameState != "won") { gameState = "lost"; }
+            else if (bricksLeft == 0) { gameState = "won"; }
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.LightGoldenrodYellow);
-
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
+
+            // Draw Information
+            // Places text in center of the screen
+            if (gameState == "won")
+            {
+                _spriteBatch.DrawString(font, winText.text, windowCenter, Color.White, 0, winText.position, 5.0f, SpriteEffects.None, 0.5f);
+            }
+            else if (gameState == "lost")
+            {
+                _spriteBatch.DrawString(font, loseText.text, windowCenter, Color.White, 0, loseText.position, 3.0f, SpriteEffects.None, 0.5f);
+                //_spriteBatch.DrawString(font, resetText.text, windowCenter, Color.White, 0, resetText.position, 5.0f, SpriteEffects.None, 0.5f);
+            }
+
             _spriteBatch.Draw(ball.Texture, ball.Bounds, Color.White);
             _spriteBatch.Draw(paddle.Texture, paddle.Bounds, Color.White);
 

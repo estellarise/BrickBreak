@@ -25,6 +25,13 @@
 /processorParam:TextureFormat=Color
 /build:ballBlue.png
 
+#begin BoxedFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:BoxedFont.spritefont
+
 #begin element_blue_rectangle.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -59,5 +66,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:paddleBlu.png
+/build:paddleBlu.png;paddleBlue.png
 
