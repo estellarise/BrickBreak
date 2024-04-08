@@ -15,5 +15,22 @@ namespace BrickBreak
 
         }
 
+        public int BoundPaddleLR(int leftBound, int rightBound)
+        {
+            if (this.Bounds.Left <= leftBound)
+            {
+                return leftBound;
+            }
+            else if (this.Bounds.Right >= rightBound)
+            {
+                return rightBound - this.Bounds.Width;
+            }
+            else
+            {
+                return this.Bounds.Left;
+            }
+
+        }
+
     }
 }

@@ -61,7 +61,7 @@ namespace BrickBreak
             lives = 3;
             paddle = new Paddle(
                         paddleTexture,
-                        new Rectangle(_graphics.PreferredBackBufferWidth / 2,
+                        new Rectangle((_graphics.PreferredBackBufferWidth - paddleTexture.Width) / 2,
                             _graphics.PreferredBackBufferHeight - paddleTexture.Height, 
                             paddleTexture.Width, 
                             paddleTexture.Height
@@ -71,7 +71,7 @@ namespace BrickBreak
             ball = new Ball(
                     ballTexture, 
                     new Rectangle(
-                        _graphics.PreferredBackBufferWidth / 2, 
+                        (_graphics.PreferredBackBufferWidth - ballTexture.Width) / 2, 
                         _graphics.PreferredBackBufferHeight - paddleTexture.Height - ballTexture.Height,
                         ballTexture.Width,
                         ballTexture.Height 
@@ -80,7 +80,7 @@ namespace BrickBreak
 
             ball.setSpeed(400f);
             paddle.setSpeed(1200f);
-            board = new Level(8,6);
+            board = new Level(1,1);
 
             //Populate level with bricks
             for (int i = 0; i < board.getLength(); ++i)
@@ -90,12 +90,13 @@ namespace BrickBreak
                     board.setBrick(
                             i,
                             j,
+                            // brick texture is 64 x 32
                             new Brick
                             (
                                 brickTexture,
                                 new Rectangle(
-                                    10 + i * 64,
-                                    j * 32,
+                                    10 + i * 68,
+                                    j * 36,
                                     brickTexture.Width,
                                     brickTexture.Height
                                 )
@@ -121,14 +122,15 @@ namespace BrickBreak
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             var kstate = Keyboard.GetState();
-            if (lives <= 0) { 
-                gameState = "lost"; 
-            }
-            else if (bricksLeft == 0) { gameState = "won"; }
+            if (bricksLeft == 0) { gameState = "won"; }
+            else if (lives <= 0) { gameState = "lost"; }
 
             // Start stopped ball
             if (ball.getDirection() == Vector2.Zero) // if ball is stopped
             {
+                ball.Bounds.X = paddle.Bounds.Center.X - ball.Bounds.Width / 2;
+                ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
+
                 if(kstate.IsKeyDown(Keys.Space)) // press space to start it
                 {
                     // choose one of two random directions: 45, 135 degrees 
@@ -173,8 +175,6 @@ namespace BrickBreak
             {
                 // reset ball to starting pt
                 ball.Direction = new Vector2(0, 0);
-                ball.Bounds.X = _graphics.PreferredBackBufferWidth / 2; 
-                ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
 
                 // lose a life
                 lives -= 1;
@@ -205,21 +205,25 @@ namespace BrickBreak
                     (int)(ball.getSpeed()* ball.Direction.X * (float) gameTime.ElapsedGameTime.TotalSeconds),
                     (int)(ball.getSpeed()* ball.Direction.Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
                 );
-            
+
+            // bound paddle
+            paddle.Bounds.X = paddle.BoundPaddleLR(0, _graphics.PreferredBackBufferWidth);
+
             // check game state
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.LightGoldenrodYellow);
+            GraphicsDevice.Clear(new Color(34,34,34));
+            //GraphicsDevice.Clear(new Color(196,235,200));
             _spriteBatch.Begin();
 
             // Draw Information
             // Places text in center of the screen
             _spriteBatch.DrawString(font, "Score:" + score.ToString(), new Vector2(600, 0), Color.White,
                 0, new Vector2 (0,0), 2.0f, SpriteEffects.None,0.5f);
-            _spriteBatch.DrawString(font,"Lives:" + lives.ToString(), new Vector2(600, 30), Color.White,
+            _spriteBatch.DrawString(font,"Lives:   " + lives.ToString(), new Vector2(600, 30), Color.White,
                 0, new Vector2 (0,0), 2.0f, SpriteEffects.None,0.5f);
 
             if (gameState == "won")
