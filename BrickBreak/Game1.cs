@@ -139,7 +139,6 @@ namespace BrickBreak
                 ball.Direction = new Vector2(0, 0);
                 ball.Bounds.X = paddle.Bounds.Center.X - ball.Bounds.Width / 2;
                 ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
-                score += 50 * lives;
             }
             else if (lives <= 0) { gameState = "lost"; }
 
