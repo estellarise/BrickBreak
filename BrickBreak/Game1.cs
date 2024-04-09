@@ -46,7 +46,6 @@ namespace BrickBreak
             gameState = "ongoing";
             score = 0;
             lives = 3;
-            board = new Level(10,4); // columns x rows, fix later
 
             // reset # of bricks remaining since win condition is tracked this way
             // will be counted upward as bricks are added
@@ -99,6 +98,7 @@ namespace BrickBreak
             paddle.setSpeed(1000f);
 
             //Populate level with bricks
+            board = new Level(10,4); // columns x rows, fix later
             for (int i = 0; i < board.getLength(); ++i)
             {
                 for (int j = 0; j < board.getWidth(); ++j)
@@ -139,6 +139,7 @@ namespace BrickBreak
                 ball.Direction = new Vector2(0, 0);
                 ball.Bounds.X = paddle.Bounds.Center.X - ball.Bounds.Width / 2;
                 ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
+                score += 50 * lives;
             }
             else if (lives <= 0) { gameState = "lost"; }
 
