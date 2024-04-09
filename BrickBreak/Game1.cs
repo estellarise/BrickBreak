@@ -19,12 +19,14 @@ namespace BrickBreak
         private SpriteBatch _spriteBatch;
         private Rectangle wall;
         private String gameState;
-        private int bricksLeft;
+        private int brickCount;
         Random rnd;
         SpriteFont font;
         Text winText;
         Text loseText;
+        Text gameTitle;
         Text resetText;
+        Text beginText;
         
         Vector2 windowCenter;
         //Texture2D paddleTexture;
@@ -40,35 +42,51 @@ namespace BrickBreak
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            // Load Textures
+            LoadContent();
+            gameState = "ongoing";
+            score = 0;
+            lives = 3;
+            board = new Level(10,4); // columns x rows, fix later
+
+            // reset # of bricks remaining since win condition is tracked this way
+            // will be counted upward as bricks are added
+            // eventually will adapt to different level shapes,
+            // so multiplying columns by rows for brickCount won't be sufficient
+            brickCount = 0;
+
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+
             Texture2D paddleTexture = Content.Load<Texture2D>("paddleBlue");
             Texture2D ballTexture = Content.Load<Texture2D>("ballBlue");
             Texture2D brickTexture = Content.Load<Texture2D>("element_blue_rectangle");
-            LoadContent();
 
+            //load text
             font = Content.Load<SpriteFont>("BoxedFont");
-            winText = new Text("You Win! :)", font);
+            winText = new Text("You Win! :) \n Play again? Press space!", font);
             loseText = new Text("You lose... \n Press space to play again.", font);
+            gameTitle = new Text("Breakout!", font);
+            //beginText = new Text("Press space to begin!", font);
             //resetText = new Text("Press space to play again.", font,);
 
-            gameState = "ongoing";
-            windowCenter= new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
-            rnd = new Random();
-
+            //load Game Objects
             wall = new Rectangle(0,0, _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
-            score = 0;
-            lives = 3;
-            paddle = new Paddle(
+            paddle = new Paddle
+                (
                         paddleTexture,
                         new Rectangle((_graphics.PreferredBackBufferWidth - paddleTexture.Width) / 2,
                             _graphics.PreferredBackBufferHeight - paddleTexture.Height, 
                             paddleTexture.Width, 
                             paddleTexture.Height
                         )
-                     );
+                 );
 
-            ball = new Ball(
+            ball = new Ball
+                (
                     ballTexture, 
                     new Rectangle(
                         (_graphics.PreferredBackBufferWidth - ballTexture.Width) / 2, 
@@ -77,10 +95,8 @@ namespace BrickBreak
                         ballTexture.Height 
                     )
                 );
-
             ball.setSpeed(400f);
-            paddle.setSpeed(1200f);
-            board = new Level(1,1);
+            paddle.setSpeed(1000f);
 
             //Populate level with bricks
             for (int i = 0; i < board.getLength(); ++i)
@@ -95,56 +111,36 @@ namespace BrickBreak
                             (
                                 brickTexture,
                                 new Rectangle(
-                                    10 + i * 68,
-                                    j * 36,
+                                    75 + i * 68,
+                                    50 + j * 36,
                                     brickTexture.Width,
                                     brickTexture.Height
                                 )
                             )
                     );
-                    bricksLeft++;
+                    brickCount++;
                 }
             }           
 
-            base.Initialize();
-        }
-
-        protected override void LoadContent()
-        {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
+            //load game tools and traits
+            windowCenter= new Vector2(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
+            rnd = new Random();
             ;
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
             var kstate = Keyboard.GetState();
-            if (bricksLeft == 0) { gameState = "won"; }
-            else if (lives <= 0) { gameState = "lost"; }
-
-            // Start stopped ball
-            if (ball.getDirection() == Vector2.Zero) // if ball is stopped
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || kstate.IsKeyDown(Keys.Escape))
+                Exit();
+            if (brickCount == 0)
             {
+                gameState = "won";
+                ball.Direction = new Vector2(0, 0);
                 ball.Bounds.X = paddle.Bounds.Center.X - ball.Bounds.Width / 2;
                 ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
-
-                if(kstate.IsKeyDown(Keys.Space)) // press space to start it
-                {
-                    // choose one of two random directions: 45, 135 degrees 
-                    if (gameState == "ongoing")
-                    {
-                        int xRnd = rnd.Next(0, 2); // 0 or 1
-                        ball.setDirection(new Vector2(-1 + xRnd * 2, -1)); // <-1 or 1, -1>, ball always starts up
-                    }
-                    else
-                    {
-                        Initialize();
-                    }
-                }
             }
+            else if (lives <= 0) { gameState = "lost"; }
 
             // Move paddle
             // Right paddle controller: Left, Right
@@ -157,8 +153,40 @@ namespace BrickBreak
             {
                 paddle.Bounds.X += (int)(paddle.getSpeed() * (float)gameTime.ElapsedGameTime.TotalSeconds);
             }
+            // bound paddle
+            paddle.Bounds.X = paddle.BoundPaddleLR(0, _graphics.PreferredBackBufferWidth);
+
+            // Start stopped ball
+            if (ball.getDirection() == Vector2.Zero) // if ball is stopped
+            {
+                // Center ball on paddle while stopped so it moves with the paddle
+                ball.Bounds.X = paddle.Bounds.Center.X - ball.Bounds.Width / 2;
+                ball.Bounds.Y = _graphics.PreferredBackBufferHeight - paddle.Texture.Height - ball.Texture.Height;
+
+                if(kstate.IsKeyDown(Keys.Space)) // press space to start it
+                {
+                    // choose one of two random directions: 45, 135 degrees 
+                    if (gameState == "ongoing")
+                    {
+                        int xRnd = rnd.Next(0, 2); // 0 or 1
+                        ball.setDirection(new Vector2(-1 + xRnd * 2, -1)); // <-1 or 1, -1>, ball always starts up
+                    }
+                    else //reset game to beginning
+                    {
+                        Initialize();
+                    }
+                }
+            }
+            else //if ball is not stopped
+            {
+                // Update ball position
+                ball.Bounds.Offset(
+                        (int)(ball.getSpeed()* ball.Direction.X * (float) gameTime.ElapsedGameTime.TotalSeconds),
+                        (int)(ball.getSpeed()* ball.Direction.Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
+                );
+            }
             
-            // Collision Detection
+            // Collision Detection against Wall (add into an object or function later?)
             if (ball.Bounds.X < wall.Left)
             {
                 ball.Direction.X = 1; 
@@ -180,7 +208,7 @@ namespace BrickBreak
                 lives -= 1;
             }
 
-            ball.collidesWith(paddle);
+            ball.collidesWith(paddle); //changes directions upon hitting paddle
 
             // Check collision with bricks
             for (int i = 0; i < board.getLength(); ++i)
@@ -194,20 +222,13 @@ namespace BrickBreak
                         {
                             currBrick.Exists = false;
                             score += 10;
-                            bricksLeft--;
+                            brickCount--;
+                            Debug.WriteLine(brickCount.ToString());
                         }
                     }
                 }
             }
 
-            // Update ball position
-            ball.Bounds.Offset(
-                    (int)(ball.getSpeed()* ball.Direction.X * (float) gameTime.ElapsedGameTime.TotalSeconds),
-                    (int)(ball.getSpeed()* ball.Direction.Y * (float) gameTime.ElapsedGameTime.TotalSeconds)
-                );
-
-            // bound paddle
-            paddle.Bounds.X = paddle.BoundPaddleLR(0, _graphics.PreferredBackBufferWidth);
 
             // check game state
             base.Update(gameTime);
@@ -216,24 +237,23 @@ namespace BrickBreak
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(new Color(34,34,34));
-            //GraphicsDevice.Clear(new Color(196,235,200));
             _spriteBatch.Begin();
 
-            // Draw Information
-            // Places text in center of the screen
-            _spriteBatch.DrawString(font, "Score:" + score.ToString(), new Vector2(600, 0), Color.White,
+            // Draw Game Information
+            _spriteBatch.DrawString(font, "Score: " + score.ToString(), new Vector2(10, 0), Color.Goldenrod,
                 0, new Vector2 (0,0), 2.0f, SpriteEffects.None,0.5f);
-            _spriteBatch.DrawString(font,"Lives:   " + lives.ToString(), new Vector2(600, 30), Color.White,
+            _spriteBatch.DrawString(font,"Lives: " + lives.ToString(), new Vector2(630, 0), Color.Goldenrod,
                 0, new Vector2 (0,0), 2.0f, SpriteEffects.None,0.5f);
+            _spriteBatch.DrawString(font, gameTitle.text, new Vector2(windowCenter.X, 25), Color.LightGoldenrodYellow, 0, gameTitle.position, 2.0f, SpriteEffects.None, 0.5f);
 
+            // Draw win and lose announcements
             if (gameState == "won")
             {
-                _spriteBatch.DrawString(font, winText.text, windowCenter, Color.White, 0, winText.position, 5.0f, SpriteEffects.None, 0.5f);
+                _spriteBatch.DrawString(font, winText.text, windowCenter, Color.White, 0, winText.position, 2.5f, SpriteEffects.None, 0.5f);
             }
             else if (gameState == "lost")
             {
                 _spriteBatch.DrawString(font, loseText.text, windowCenter, Color.White, 0, loseText.position, 2.5f, SpriteEffects.None, 0.5f);
-                //_spriteBatch.DrawString(font, resetText.text, windowCenter, Color.White, 0, resetText.position, 5.0f, SpriteEffects.None, 0.5f);
             }
 
             _spriteBatch.Draw(ball.Texture, ball.Bounds, Color.White);

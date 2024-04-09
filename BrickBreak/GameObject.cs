@@ -38,7 +38,7 @@ namespace BrickBreak
                 {
                     //this.Bounds.Y = other.Bounds.Bottom;
                     this.Direction.Y = 1;
-                    Debug.WriteLine("Bounce Down");
+                    //Debug.WriteLine("Bounce Down");
                     return true;
                 }
                 // this obj collides other from top
@@ -47,7 +47,7 @@ namespace BrickBreak
                 {
                     //this.Bounds.Y = other.Bounds.Top - this.Bounds.Height;
                     this.Direction.Y = -1;
-                    Debug.WriteLine("Bounce Up");
+                    //Debug.WriteLine("Bounce Up");
                     return true;
                 }
             } 
@@ -59,14 +59,14 @@ namespace BrickBreak
                 {
                     //this.Bounds.X = other.Bounds.Right;
                     this.Direction.X = 1;
-                    Debug.WriteLine("Bounce Right");
+                    //Debug.WriteLine("Bounce Right");
                     return true;
                 }
                 else if (this.Bounds.Right > other.Bounds.Left && this.Bounds.Left < other.Bounds.Left)
                 {
                     //this.Bounds.X = other.Bounds.Left - this.Bounds.Width;
                     this.Direction.X = -1;
-                    Debug.WriteLine("Bounce Left");
+                    //Debug.WriteLine("Bounce Left");
                     return true;
                 }
             }
